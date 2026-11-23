@@ -37,6 +37,8 @@ from .const import (
     CONF_PRICING_URL,
     CONF_SCAN_INTERVAL,
     CONF_SPIKE_THRESHOLD,
+    CONF_HISTORY_LEVEL_SOURCE,
+    DEFAULT_HISTORY_LEVEL_SOURCE,
     API_URL,
     API_TIMEOUT,
     DEFAULT_SCAN_INTERVAL,
@@ -60,6 +62,8 @@ from .const import (
     ATTR_IS_OWNER,
     ATTR_PRODUCT,
 )
+
+from .history_workaround import async_apply_history_levels
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -150,6 +154,7 @@ class OtodataUpdateCoordinator(DataUpdateCoordinator):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         """Initialize."""
         self.entry = entry
+        self._history_level_cache: dict[str, dict[str, Any]] = {}
         self.session = async_get_clientsession(hass)
         self.auth = aiohttp.BasicAuth(
             entry.data[CONF_USERNAME],
@@ -178,6 +183,14 @@ class OtodataUpdateCoordinator(DataUpdateCoordinator):
         except (aiohttp.ClientError, TimeoutError) as err:
             raise UpdateFailed(f"Error communicating with API: {err}") from err
 
+        # Merge fresh historical readings into the existing tank metadata.
+        history_source = self.entry.options.get(
+            CONF_HISTORY_LEVEL_SOURCE, DEFAULT_HISTORY_LEVEL_SOURCE
+        )
+        tanks_data = await async_apply_history_levels(
+            self.session, self.auth, tanks_data, API_TIMEOUT,
+            history_source, self._history_level_cache,
+        )
         result: dict[str, Any] = {"tanks": tanks_data}
 
         pricing_url = self.entry.data.get(CONF_PRICING_URL)
@@ -314,6 +327,12 @@ class OtodataTankSensor(CoordinatorEntity, SensorEntity):
             
             attrs = {
                 ATTR_LEVEL: tank_data.get("Level"),
+                "level_source": tank_data.get("_LevelSource", "summary"),
+                "summary_level": tank_data.get("_SummaryLevel", tank_data.get("Level")),
+                "history_current_level": tank_data.get("_HistoryCurrentLevel"),
+                "history_graph_level": tank_data.get("_HistoryGraphLevel"),
+                "history_graph_date": tank_data.get("_HistoryGraphDate"),
+                "history_status": tank_data.get("_HistoryStatus", "disabled"),
                 ATTR_TANK_CAPACITY: capacity_liters,  # Original from API (liters)
                 "tank_capacity_liters": capacity_liters,  # Explicit liters
                 ATTR_SERIAL_NUMBER: tank_data.get("SerialNumber"),
@@ -639,6 +658,7 @@ class OtodataTankConsumptionSensor(CoordinatorEntity, RestoreSensor):
         )
         self._cumulative_consumption: float = 0.0
         self._previous_volume_ft3: float | None = None
+        self._last_effective_source: str | None = None
 
         tank_id = "unknown"
         tank_name = f"Tank {tank_index + 1}"
@@ -679,6 +699,11 @@ class OtodataTankConsumptionSensor(CoordinatorEntity, RestoreSensor):
 
         # Restore previous volume so first update calculates delta correctly
         last_state = await self.async_get_last_state()
+        # Old summary baseline must not be compared with the new history source.
+        self._last_effective_source = (
+            last_state.attributes.get("level_source", "summary")
+            if last_state else None
+        )
         if last_state and last_state.attributes.get("previous_volume_ft3") is not None:
             try:
                 self._previous_volume_ft3 = float(
@@ -742,8 +767,20 @@ class OtodataTankConsumptionSensor(CoordinatorEntity, RestoreSensor):
           different reading confirms it, so one bad reading (for example a
           momentary 0%) is not counted as usage.
         """
+        tank_data = self._get_tank_data() or {}
+        current_source = tank_data.get("_LevelSource", "summary")
+        if current_source == "history_unavailable":
+            return  # Never calculate consumption from a stale summary value.
         current = self._get_current_volume_ft3()
         if current is None:
+            return
+        if self._last_effective_source != current_source:
+            # Re-baseline on API source changes without fabricating a delivery.
+            self._previous_volume_ft3 = current
+            self._held_drop = None
+            self._last_effective_source = current_source
+            _LOGGER.info("%s: level source changed to %s; consumption re-baselined",
+                         self._tank_name, current_source)
             return
 
         previous = self._previous_volume_ft3
@@ -872,7 +909,10 @@ class OtodataTankConsumptionSensor(CoordinatorEntity, RestoreSensor):
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         """Expose previous volume (restored on restart) and any held reading."""
-        attrs: dict[str, Any] = {"previous_volume_ft3": self._previous_volume_ft3}
+        attrs: dict[str, Any] = {
+            "previous_volume_ft3": self._previous_volume_ft3,
+            "level_source": self._last_effective_source,
+        }
         if self._held_drop is not None:
             attrs["held_drop_volume_ft3"] = self._held_drop[0]
         return attrs
