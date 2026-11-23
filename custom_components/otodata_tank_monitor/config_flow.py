@@ -20,6 +20,8 @@ from .const import (
     CONF_PRICING_URL,
     CONF_SCAN_INTERVAL,
     CONF_SPIKE_THRESHOLD,
+    CONF_HISTORY_LEVEL_SOURCE,
+    DEFAULT_HISTORY_LEVEL_SOURCE,
     API_URL,
     API_TIMEOUT,
     DEFAULT_SCAN_INTERVAL,
@@ -137,6 +139,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         current_spike = self.config_entry.options.get(
             CONF_SPIKE_THRESHOLD, DEFAULT_SPIKE_THRESHOLD
         )
+        current_history_source = self.config_entry.options.get(
+            CONF_HISTORY_LEVEL_SOURCE, DEFAULT_HISTORY_LEVEL_SOURCE
+        )
         schema = vol.Schema(
             {
                 vol.Required(CONF_SCAN_INTERVAL, default=current): vol.All(
@@ -147,6 +152,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     vol.Coerce(int),
                     vol.Range(min=MIN_SPIKE_THRESHOLD, max=MAX_SPIKE_THRESHOLD),
                 ),
+                vol.Required(CONF_HISTORY_LEVEL_SOURCE, default=current_history_source): vol.In({
+                    "graph": "Latest historical graph point (workaround)",
+                    "current": "History CurrentLevel (alternate)",
+                    "summary": "Original device summary (disable workaround)",
+                }),
             }
         )
         return self.async_show_form(step_id="init", data_schema=schema)
