@@ -9,6 +9,8 @@ CONF_PRICING_URL = "pricing_url"
 # Options (set from the integration's "Configure" button)
 CONF_SCAN_INTERVAL = "scan_interval"  # minutes
 CONF_SPIKE_THRESHOLD = "spike_threshold"  # percent of tank capacity
+CONF_HISTORY_LEVEL_SOURCE = "history_level_source"
+DEFAULT_HISTORY_LEVEL_SOURCE = "graph"  # graph, current, or summary
 
 # API
 API_URL = "https://ws.otodatanetwork.com/neevoapp/v1/DataService.svc/GetAllDisplayPropaneDevices"
