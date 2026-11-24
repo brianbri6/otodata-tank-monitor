@@ -1,6 +1,6 @@
 """Constants for the Otodata Tank Monitor integration."""
 
-DOMAIN = "otodata_tank_monitor"
+DOMAIN = "otodata_tank_monitor_history"
 
 # Configuration
 CONF_USERNAME = "username"
@@ -29,7 +29,7 @@ MAX_SPIKE_THRESHOLD = 50
 DELIVERY_MIN_PERCENT = 5
 
 # Event fired when a delivery (fill) is detected
-EVENT_TANK_FILLED = "otodata_tank_monitor_tank_filled"
+EVENT_TANK_FILLED = "otodata_tank_monitor_history_tank_filled"
 DEFAULT_NAME = "Otodata Tank"
 
 # Conversion factors

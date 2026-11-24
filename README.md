@@ -4,7 +4,7 @@ This is a maintained fork of [briadelour/otodata-tank-monitor](https://github.co
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-donate-yellow?logo=buymeacoffee&logoColor=white)](https://buymeacoffee.com/briadelour)
 [![PayPal](https://img.shields.io/badge/PayPal-donate-blue?logo=paypal&logoColor=white)](https://www.paypal.com/paypalme/bdeloureiro)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
-[![GitHub release](https://img.shields.io/github/release/brianbri6/otodata-tank-monitor.svg)](https://github.com/brianbri6/otodata-tank-monitor/releases)
+[![GitHub release](https://img.shields.io/github/release/brianbri6/otodata-tank-monitor2.svg)](https://github.com/brianbri6/otodata-tank-monitor2/releases)
 
 Monitor your Otodata propane tank levels directly in Home Assistant. Access your tank data through the Nee-Vo portal by Otodata Network. This is a custom integration that can be installed via HACS.
 
@@ -91,26 +91,27 @@ If you haven't already set up your Nee-Vo portal account:
 2. Click on "Integrations"
 3. Click the three dots in the top right corner
 4. Select "Custom repositories"
-5. Add this repository URL: `https://github.com/brianbri6/otodata-tank-monitor`
+5. Add this repository URL: `https://github.com/brianbri6/otodata-tank-monitor2`
 6. Select category: "Integration"
 7. Click "Add"
 8. Click "Install" on the Otodata Tank Monitor card
 9. Restart Home Assistant
 
-### Switching from the original repository (preserve your entities)
+### Installing alongside the original repository
 
-Back up Home Assistant first. This fork intentionally uses the same integration domain and directory, `custom_components/otodata_tank_monitor`, so the existing configuration and unique IDs can be retained. Do not delete the configured integration in Settings → Devices & services.
+Version 2.2.0 uses its own domain and directory, `otodata_tank_monitor_history`, to avoid Marketplace/HACS ownership conflicts with the original `otodata_tank_monitor` integration. The original integration does not need to be uninstalled.
 
-- **Standalone HACS (older Home Assistant):** remove the original repository's downloaded files using HACS, then add and download this fork. Restart Home Assistant only after the replacement is installed. Do not remove the configured integration.
-- **Marketplace (Home Assistant 2026.11 and later):** if installation reports "The otodata_tank_monitor directory belongs to briadelour/otodata-tank-monitor", the old repository still claims the directory in local Marketplace metadata. Changing GitHub manifest URLs does not transfer that ownership. Do not choose "Delete and uninstall" if it would delete the configured integration. See [Home Assistant issue #190454](https://github.com/home-assistant/core/issues/190454). A temporary workaround reported there is to clear the old installed-repository marker with Core stopped and a backup of Marketplace metadata, using a reviewed repair procedure. See [Marketplace Repository Repair](https://github.com/ibasebcast/marketplace-repository-repair) for an independent tool; review it before use and specify the source `briadelour/otodata-tank-monitor` and destination `brianbri6/otodata-tank-monitor`. Then install this fork through Marketplace. Alternatively, copy this fork's complete integration directory over the original manually, keeping a backup outside custom_components; this does not transfer Marketplace ownership, so disable automatic upstream updates where available.
-- **Fresh installation:** add this fork directly; no migration is needed.
+1. Add this fork to HACS or Marketplace and download the current main branch (manifest version 2.2.0).
+2. Restart Home Assistant and add **Otodata Tank Monitor (History API)** in Settings → Devices & services.
+3. Sign in with your existing Nee-Vo account and verify the new tank level and source attributes.
+4. If desired, disable the original configured integration and update dashboard/automation entity references to the new entities. The new domain has separate config entries, entity identities and consumption statistics. Existing history is not automatically transferred.
 
-Keep the backup until you have checked existing entities, account settings, and automations. Never install both versions as separate configured integrations.
+If an earlier version of this fork was already installed, upgrade with a backup and configure the new integration separately. Do not manually delete the original directory or config entries to resolve ownership conflicts.
 
 ### Manual Installation
 
-1. Download the latest release from the [releases page](https://github.com/brianbri6/otodata-tank-monitor/releases)
-2. Extract the `custom_components/otodata_tank_monitor` folder to your Home Assistant `custom_components` directory
+1. Download the latest release from the [releases page](https://github.com/brianbri6/otodata-tank-monitor2/releases)
+2. Extract the `custom_components/otodata_tank_monitor_history` folder to your Home Assistant `custom_components` directory
 3. Restart Home Assistant
 
 ## Configuration
@@ -190,7 +191,7 @@ The URL pattern is: `https://www.eia.gov/dnav/pet/pet_pri_wfr_dcus_S[STATE]_w.ht
 
 **Gas Consumption details:** each time the integration polls, a drop in tank volume is added to the total and a rise (a delivery) is ignored. The total survives restarts and starts at 0 on a new install. Its `previous_volume_ft3` attribute is how it remembers the last reading, so don't edit it. A drop larger than the spike threshold (default 10% of the tank) is held until a second, different reading confirms it (`held_drop_volume_ft3` shows while one is held). Change or disable this under **Configure**.
 
-**Tank-filled event:** when the level rises by 5 points or more, the event `otodata_tank_monitor_tank_filled` is fired and the **Last Delivery** sensor updates. See [NEEVO_APP_FEATURES.md](NEEVO_APP_FEATURES.md) for a notification automation.
+**Tank-filled event:** when the level rises by 5 points or more, the event `otodata_tank_monitor_history_tank_filled` is fired and the **Last Delivery** sensor updates. See [NEEVO_APP_FEATURES.md](NEEVO_APP_FEATURES.md) for a notification automation.
 
 **Propane Price details:** the price is converted from EIA's $/gal. Attributes: `price_per_gallon`, and `price_is_stale` (true when EIA has no fresh value and the last good price is being reused, which can happen outside the October-March weekly reporting season).
 
@@ -324,7 +325,7 @@ NOTE: Go to Developer Tools and run homeassistant.reload_config_entry to find th
 
 Add **Gas Consumption** as the gas source and **Propane Price** (or a static price) for cost. Full guide, including units, limitations for refilled tanks, and troubleshooting: [ENERGY_DASHBOARD.md](ENERGY_DASHBOARD.md).
 
-## Upgrading to 2.1.0
+## Upgrading to 2.1.0 (upstream history)
 
 No breaking changes from 2.0.x. New: the `Last Delivery` sensor and tank-filled event, spike protection, and a second field under **Configure**. `tank_capacity_gallons` now shows two decimals (319.97 instead of 320.0).
 
@@ -424,7 +425,7 @@ The Otodata tank monitors themselves typically report every 6-24 hours depending
 
 ## Support
 
-- **Issues & Feature Requests:** [GitHub Issues](https://github.com/brianbri6/otodata-tank-monitor/issues)
+- **Issues & Feature Requests:** [GitHub Issues](https://github.com/brianbri6/otodata-tank-monitor2/issues)
 - **Otodata Support:** Contact Otodata for issues with your tank monitoring hardware or account
 - **Home Assistant Community:** [Home Assistant Forums](https://community.home-assistant.io/)
 

@@ -1,5 +1,5 @@
 {
-  "domain": "otodata_tank_monitor",
+  "domain": "otodata_tank_monitor_history",
   "name": "Otodata Tank Monitor (History API)",
   "codeowners": [
     "@brianbri6",
@@ -7,11 +7,11 @@
   ],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/brianbri6/otodata-tank-monitor",
+  "documentation": "https://github.com/brianbri6/otodata-tank-monitor2",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/brianbri6/otodata-tank-monitor/issues",
+  "issue_tracker": "https://github.com/brianbri6/otodata-tank-monitor2/issues",
   "requirements": [
     "beautifulsoup4"
   ],
-  "version": "2.1.1"
+  "version": "2.2.0"
 }

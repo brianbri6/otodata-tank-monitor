@@ -4,7 +4,7 @@ import importlib.util
 from pathlib import Path
 import unittest
 
-PATH = Path(__file__).resolve().parents[1] / "custom_components/otodata_tank_monitor/history_workaround.py"
+PATH = Path(__file__).resolve().parents[1] / "custom_components/otodata_tank_monitor_history/history_workaround.py"
 spec = importlib.util.spec_from_file_location("history_workaround", PATH)
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)

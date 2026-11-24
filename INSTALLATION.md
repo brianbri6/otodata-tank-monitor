@@ -48,7 +48,7 @@ If you don't have HACS installed:
 2. Click on **Integrations**
 3. Click the **three dots (⋮)** in the top right corner
 4. Select **Custom repositories**
-5. Enter the repository URL: `https://github.com/briadelour/otodata-tank-monitor`
+5. Enter the repository URL: `https://github.com/brianbri6/otodata-tank-monitor22`
 6. Select category: **Integration**
 7. Click **Add**
 8. Find "Otodata Propane Tank Monitor" in the list
@@ -59,10 +59,10 @@ If you don't have HACS installed:
 
 ### Option B: Manual Installation (alternative method)
 
-1. Download the latest release from [GitHub Releases](https://github.com/briadelour/otodata-tank-monitor/releases)
+1. Download the latest release from [GitHub Releases](https://github.com/brianbri6/otodata-tank-monitor22/releases)
 2. Extract the ZIP file
-3. Copy the `custom_components/otodata_tank_monitor` folder to your Home Assistant `custom_components` directory
-   - Path should be: `/config/custom_components/otodata_tank_monitor/`
+3. Copy the `custom_components/otodata_tank_monitor_history` folder to your Home Assistant `custom_components` directory
+   - Path should be: `/config/custom_components/otodata_tank_monitor_history/`
    - If `custom_components` doesn't exist, create it
 4. **Restart Home Assistant**
 
@@ -196,7 +196,7 @@ Create a dashboard card to view your tank level:
 ### Integration Not Found
 
 - Ensure you've restarted Home Assistant after installation
-- Check that the files are in `/config/custom_components/otodata_tank_monitor/`
+- Check that the files are in `/config/custom_components/otodata_tank_monitor_history/`
 - Clear your browser cache (Ctrl+F5)
 
 ### Invalid Credentials Error
@@ -214,7 +214,7 @@ Create a dashboard card to view your tank level:
 ### Sensors Show "Unavailable"
 
 - Check Home Assistant logs: **Settings** → **System** → **Logs**
-- Look for errors related to "otodata_tank_monitor"
+- Look for errors related to "otodata_tank_monitor_history"
 - Try reloading the integration: **Settings** → **Devices & Services** → **Otodata** → **⋮** → **Reload**
 
 ### Propane Price Not Working
@@ -234,5 +234,5 @@ Create a dashboard card to view your tank level:
 
 - Check the [README](README.md) for detailed documentation
 - Review [common issues](README.md#troubleshooting)
-- Open an [issue on GitHub](https://github.com/briadelour/otodata-tank-monitor/issues)
+- Open an [issue on GitHub](https://github.com/brianbri6/otodata-tank-monitor22/issues)
 - Ask in the [Home Assistant Community](https://community.home-assistant.io/)

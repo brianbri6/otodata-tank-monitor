@@ -1,3 +1,10 @@
+# Fork version 2.2.0
+
+- Separate integration domain and directory `otodata_tank_monitor_history` to eliminate ownership collisions with the upstream integration.
+- History API remains the default percentage source.
+- New config entries and entities are required; upstream data is not deleted or migrated automatically.
+- Use an explicit asynchronous timeout for history requests.
+
 # Changelog
 
 All notable changes to this project will be documented in this file.

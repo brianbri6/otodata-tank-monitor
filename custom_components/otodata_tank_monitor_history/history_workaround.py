@@ -103,12 +103,12 @@ async def async_apply_history_levels(
         if tank_id:
             try:
                 async with semaphore:
-                    async with session.get(
-                        _HISTORY_URL + quote(tank_id, safe=""),
-                        auth=auth, timeout=timeout
-                    ) as response:
-                        response.raise_for_status()
-                        payload = await response.json(content_type=None)
+                    async with asyncio.timeout(timeout):
+                        async with session.get(
+                            _HISTORY_URL + quote(tank_id, safe=""), auth=auth
+                        ) as response:
+                            response.raise_for_status()
+                            payload = await response.json(content_type=None)
                 chosen = _choose_history(payload, preference)
                 if chosen is None:
                     _LOGGER.warning("Otodata history has no usable level")

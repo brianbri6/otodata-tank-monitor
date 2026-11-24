@@ -16,7 +16,7 @@ Get up and running with the Otodata Propane Tank Monitor in 5 minutes!
 ### 1. Add to HACS (2 min)
 1. Open HACS → Integrations
 2. Click ⋮ → Custom repositories
-3. Add: `https://github.com/briadelour/otodata-tank-monitor`
+3. Add: `https://github.com/brianbri6/otodata-tank-monitor22`
 4. Category: Integration
 5. Click "Download" on the Otodata card
 6. Restart Home Assistant
@@ -92,5 +92,5 @@ Find your state's URL:
 ## Need Help?
 
 - [Installation Guide](INSTALLATION.md) - Detailed instructions
-- [GitHub Issues](https://github.com/briadelour/otodata-tank-monitor/issues) - Report bugs
+- [GitHub Issues](https://github.com/brianbri6/otodata-tank-monitor22/issues) - Report bugs
 - [Home Assistant Community](https://community.home-assistant.io/) - Get support
