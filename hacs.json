@@ -1,5 +1,5 @@
 {
-  "name": "Otodata Tank Monitor",
+  "name": "Otodata Tank Monitor (History API)",
   "content_in_root": false,
   "filename": "otodata_tank_monitor",
   "render_readme": true,

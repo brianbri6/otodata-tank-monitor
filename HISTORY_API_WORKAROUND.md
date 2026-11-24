@@ -8,14 +8,16 @@ This fork adds a second authenticated request for each tank:
 
 The default **Latest historical graph point** mode uses the newest valid `GraphLevelsData[].Level` by timestamp and falls back to `CurrentLevel`. It replaces only the effective tank `Level` and, when dated, `LastReadingDate`; tank IDs, capacity, pressure and other metadata still come from the original summary response. Existing Home Assistant sensor IDs are unchanged.
 
-## Install via HACS
+## Install via HACS or Marketplace
+
+**Existing upstream users:** read the [repository migration instructions](README.md#switching-from-the-original-repository-preserve-your-entities) before downloading. Do not delete the configured integration.
 
 1. HACS → Custom repositories → add `https://github.com/brianbri6/otodata-tank-monitor` as **Integration**.
-2. Install this fork. If the upstream integration is already installed, remove the upstream HACS repository entry to avoid conflicting updates; back up your Home Assistant configuration first.
+2. Install this fork after transferring the installation from the original repository as described in the migration instructions.
 3. Restart Home Assistant, then reload **Otodata Tank Monitor**.
 4. Open **Settings → Devices & services → Otodata Tank Monitor → Configure**. Choose the history source and polling interval.
 
-The workaround is implemented on branch `fix/history-api-level-workaround`. Select this branch in HACS if the default branch does not contain it yet.
+The workaround is included on the default `main` branch.
 
 ## History source options
 
